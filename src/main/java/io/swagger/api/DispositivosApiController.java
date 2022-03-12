@@ -26,6 +26,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 
 import javax.validation.constraints.*;
@@ -38,6 +43,9 @@ import java.util.Map;
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2022-03-02T00:36:42.320Z[GMT]")
 @RestController
 public class DispositivosApiController implements DispositivosApi {
+
+    String login= "root";
+    String password = "8AIAGUzOgTrzHZDxQg1P";
 
     private static final Logger log = LoggerFactory.getLogger(DispositivosApiController.class);
 
@@ -52,14 +60,29 @@ public class DispositivosApiController implements DispositivosApi {
     }
 
     public ResponseEntity<Devolver> addDispositivo(@NotNull @Parameter(in = ParameterIn.QUERY, description = "" ,required=true,schema=@Schema()) @Valid @RequestParam(value = "restKey", required = true) String restKey,@Parameter(in = ParameterIn.DEFAULT, description = "", required=true, schema=@Schema()) @Valid @RequestBody Dispositivo body) {
+        Integer rs=1;
         String accept = request.getHeader("Accept");
         if (accept != null && accept.contains("application/json")) {
             try {
                 if (service.serviceClass.restKeyChecker(restKey))
                 {
+                    try {
+                        Connection con = DriverManager.getConnection (
+                                "jdbc:mysql://localhost:3306/mtis", login, password);
+                        Statement stmt = con.createStatement();
+                        String descr = body.getDescripcion();
+                        Integer code = body.getCodigo();
+                        rs = stmt.executeUpdate ("INSERT INTO dispositivo (codigo, descripcion) VALUES (" + code + ", " + "'" + descr +"')");
+                        Devolver dv = new Devolver();
+                        dv.setCodigo(0);
+                        dv.setMensaje("ok");
+                        return new ResponseEntity<Devolver>(objectMapper.readValue("{\n  \"type\" : \"Devolver\",\n \"codigo\" : 200,\n  \"mensaje\" : \"message\"\n}", Devolver.class), HttpStatus.OK);
+                    } catch(SQLException e){
+                        System.out.println("SQL exception occured" + e);
 
+                    }
                 }
-                return new ResponseEntity<Devolver>(objectMapper.readValue("{\n  \"codigo\" : 200,\n  \"mensaje\" : \"message\"\n}", Devolver.class), HttpStatus.NOT_IMPLEMENTED);
+                return new ResponseEntity<Devolver>(objectMapper.readValue("{\n \"type\" : \"Devolver\",\n \"codigo\" : 403,\n  \"mensaje\" : \"wrong rest key\"\n}", Devolver.class), HttpStatus.FORBIDDEN);
             } catch (IOException e) {
                 log.error("Couldn't serialize response for content type application/json", e);
                 return new ResponseEntity<Devolver>(HttpStatus.INTERNAL_SERVER_ERROR);
