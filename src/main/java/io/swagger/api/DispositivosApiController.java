@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 import javax.servlet.http.HttpServletRequest;
@@ -54,6 +55,10 @@ public class DispositivosApiController implements DispositivosApi {
         String accept = request.getHeader("Accept");
         if (accept != null && accept.contains("application/json")) {
             try {
+                if (service.serviceClass.restKeyChecker(restKey))
+                {
+
+                }
                 return new ResponseEntity<Devolver>(objectMapper.readValue("{\n  \"codigo\" : 200,\n  \"mensaje\" : \"message\"\n}", Devolver.class), HttpStatus.NOT_IMPLEMENTED);
             } catch (IOException e) {
                 log.error("Couldn't serialize response for content type application/json", e);
@@ -68,6 +73,10 @@ public class DispositivosApiController implements DispositivosApi {
         String accept = request.getHeader("Accept");
         if (accept != null && accept.contains("application/json")) {
             try {
+                if (service.serviceClass.restKeyChecker(restKey))
+                {
+                    System.out.println("restKeyOk");
+                }
                 return new ResponseEntity<List<Dispositivo>>(objectMapper.readValue("[ {\n  \"descripcion\" : \"printwer\",\n  \"codigo\" : 1,\n  \"id\" : 1\n}, {\n  \"descripcion\" : \"printwer\",\n  \"codigo\" : 1,\n  \"id\" : 1\n} ]", List.class), HttpStatus.NOT_IMPLEMENTED);
             } catch (IOException e) {
                 log.error("Couldn't serialize response for content type application/json", e);
