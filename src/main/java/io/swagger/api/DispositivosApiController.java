@@ -112,9 +112,23 @@ public class DispositivosApiController implements DispositivosApi {
 
     public ResponseEntity<Devolver> deleteDispositivo(@Parameter(in = ParameterIn.PATH, description = "", required=true, schema=@Schema()) @PathVariable("idDispositivo") String idDispositivo,@NotNull @Parameter(in = ParameterIn.QUERY, description = "" ,required=true,schema=@Schema()) @Valid @RequestParam(value = "restKey", required = true) String restKey) {
         String accept = request.getHeader("Accept");
+        Integer rs=1;
         if (accept != null && accept.contains("application/json")) {
             try {
-                return new ResponseEntity<Devolver>(objectMapper.readValue("{\n  \"codigo\" : 200,\n  \"mensaje\" : \"message\"\n}", Devolver.class), HttpStatus.NOT_IMPLEMENTED);
+                if (service.serviceClass.restKeyChecker(restKey))
+                {
+                    try {
+                        Connection con = DriverManager.getConnection (
+                                "jdbc:mysql://localhost:3306/mtis", login, password);
+                        Statement stmt = con.createStatement();
+                        rs = stmt.executeUpdate("DELETE FROM dispositivo WHERE codigo=" + idDispositivo + ";");
+                        return new ResponseEntity<Devolver>(objectMapper.readValue("{\n  \"type\" : \"Devolver\",\n \"codigo\" : 200,\n  \"mensaje\" : \"message\"\n}", Devolver.class), HttpStatus.OK);
+                    } catch(SQLException e){
+                        System.out.println("SQL exception occured" + e);
+
+                    }
+                }
+                return new ResponseEntity<Devolver>(objectMapper.readValue("{\n \"type\" : \"Devolver\",\n \"codigo\" : 403,\n  \"mensaje\" : \"wrong rest key\"\n}", Devolver.class), HttpStatus.FORBIDDEN);
             } catch (IOException e) {
                 log.error("Couldn't serialize response for content type application/json", e);
                 return new ResponseEntity<Devolver>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -126,6 +140,7 @@ public class DispositivosApiController implements DispositivosApi {
 
     public ResponseEntity<InlineResponse2002> searchDispositivo(@Parameter(in = ParameterIn.PATH, description = "", required=true, schema=@Schema()) @PathVariable("idDispositivo") String idDispositivo,@NotNull @Parameter(in = ParameterIn.QUERY, description = "" ,required=true,schema=@Schema()) @Valid @RequestParam(value = "restKey", required = true) String restKey) {
         String accept = request.getHeader("Accept");
+        Integer rs=1;
         if (accept != null && accept.contains("application/json")) {
             try {
                 return new ResponseEntity<InlineResponse2002>(objectMapper.readValue("\"\"", InlineResponse2002.class), HttpStatus.NOT_IMPLEMENTED);
