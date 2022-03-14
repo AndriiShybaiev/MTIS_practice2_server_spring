@@ -1,6 +1,8 @@
 package io.swagger.model;
 
 import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.validation.annotation.Validated;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
@@ -13,6 +15,28 @@ import javax.validation.constraints.*;
 
 
 public class InlineResponse2002  implements OneOfinlineResponse2002 {
+
+  public Integer getCodigo() {
+    return codigo;
+  }
+
+  public void setCodigo(Integer codigo) {
+    this.codigo = codigo;
+  }
+
+  public String getDescripcion() {
+    return descripcion;
+  }
+
+  public void setDescripcion(String descripcion) {
+    this.descripcion = descripcion;
+  }
+
+  @JsonProperty("codigo")
+  private Integer codigo = null;
+
+  @JsonProperty("descripcion")
+  private String descripcion = null;
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -33,8 +57,10 @@ public class InlineResponse2002  implements OneOfinlineResponse2002 {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class InlineResponse2002 {\n");
-    
+    sb.append("{\n  \"type\": \"InlineResponse2002\"\n,");
+    sb.append("    \"codigo\": ").append(toIndentedString(codigo)).append("\n,");
+    sb.append("    \"descripcion\": ").append("\"").append(toIndentedString(descripcion)).append("\"\n");
+
     sb.append("}");
     return sb.toString();
   }
