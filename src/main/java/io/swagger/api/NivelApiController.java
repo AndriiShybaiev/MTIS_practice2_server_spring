@@ -30,6 +30,10 @@ import javax.validation.constraints.*;
 import javax.validation.Valid;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +47,9 @@ public class NivelApiController implements NivelApi {
 
     private final HttpServletRequest request;
 
+    String login= "root";
+    String password = "8AIAGUzOgTrzHZDxQg1P";
+
     @org.springframework.beans.factory.annotation.Autowired
     public NivelApiController(ObjectMapper objectMapper, HttpServletRequest request) {
         this.objectMapper = objectMapper;
@@ -51,8 +58,27 @@ public class NivelApiController implements NivelApi {
 
     public ResponseEntity<Devolver> addNivel(@NotNull @Parameter(in = ParameterIn.QUERY, description = "" ,required=true,schema=@Schema()) @Valid @RequestParam(value = "restKey", required = true) String restKey,@Parameter(in = ParameterIn.DEFAULT, description = "nivel", required=true, schema=@Schema()) @Valid @RequestBody Nivel body) {
         String accept = request.getHeader("Accept");
+        Integer rs=1;
         if (accept != null && accept.contains("application/json")) {
             try {
+                if (service.serviceClass.restKeyChecker(restKey))
+                {
+                    try {
+                        Connection con = DriverManager.getConnection (
+                                "jdbc:mysql://localhost:3306/mtis", login, password);
+                        Statement stmt = con.createStatement();
+                        String descr = body.getDescripcion();
+                        Integer nivel = body.getNivel();
+                        rs = stmt.executeUpdate ("INSERT INTO niveles (nivel, descripcion) VALUES (" + nivel + ", " + "'" + descr +"')");
+                        Devolver dv = new Devolver();
+                        dv.setCodigo(0);
+                        dv.setMensaje("ok");
+                        return new ResponseEntity<Devolver>(objectMapper.readValue("{\n  \"type\" : \"Devolver\",\n \"codigo\" : 200,\n  \"mensaje\" : \"message\"\n}", Devolver.class), HttpStatus.OK);
+                    } catch(SQLException e){
+                        System.out.println("SQL exception occured" + e);
+
+                    }
+                }
                 return new ResponseEntity<Devolver>(objectMapper.readValue("{\n  \"codigo\" : 200,\n  \"mensaje\" : \"message\"\n}", Devolver.class), HttpStatus.NOT_IMPLEMENTED);
             } catch (IOException e) {
                 log.error("Couldn't serialize response for content type application/json", e);
@@ -63,18 +89,5 @@ public class NivelApiController implements NivelApi {
         return new ResponseEntity<Devolver>(HttpStatus.NOT_IMPLEMENTED);
     }
 
-    public ResponseEntity<List<Nivel>> allNiveles(@NotNull @Parameter(in = ParameterIn.QUERY, description = "" ,required=true,schema=@Schema()) @Valid @RequestParam(value = "restKey", required = true) String restKey) {
-        String accept = request.getHeader("Accept");
-        if (accept != null && accept.contains("application/json")) {
-            try {
-                return new ResponseEntity<List<Nivel>>(objectMapper.readValue("[ {\n  \"descripcion\" : \"ground floor\",\n  \"id\" : 1,\n  \"nivel\" : 1\n}, {\n  \"descripcion\" : \"ground floor\",\n  \"id\" : 1,\n  \"nivel\" : 1\n} ]", List.class), HttpStatus.NOT_IMPLEMENTED);
-            } catch (IOException e) {
-                log.error("Couldn't serialize response for content type application/json", e);
-                return new ResponseEntity<List<Nivel>>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        }
-
-        return new ResponseEntity<List<Nivel>>(HttpStatus.NOT_IMPLEMENTED);
-    }
 
 }

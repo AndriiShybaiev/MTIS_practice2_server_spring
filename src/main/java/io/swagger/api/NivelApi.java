@@ -49,15 +49,6 @@ public interface NivelApi {
     ResponseEntity<Devolver> addNivel(@NotNull @Parameter(in = ParameterIn.QUERY, description = "" ,required=true,schema=@Schema()) @Valid @RequestParam(value = "restKey", required = true) String restKey, @Parameter(in = ParameterIn.DEFAULT, description = "nivel", required=true, schema=@Schema()) @Valid @RequestBody Nivel body);
 
 
-    @Operation(summary = "", description = "", tags={ "niveles" })
-    @ApiResponses(value = { 
-        @ApiResponse(responseCode = "200", description = "ok", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Nivel.class)))),
-        
-        @ApiResponse(responseCode = "400", description = "invalid input, object invalid", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Devolver.class))) })
-    @RequestMapping(value = "/nivel",
-        produces = { "application/json" }, 
-        method = RequestMethod.GET)
-    ResponseEntity<List<Nivel>> allNiveles(@NotNull @Parameter(in = ParameterIn.QUERY, description = "" ,required=true,schema=@Schema()) @Valid @RequestParam(value = "restKey", required = true) String restKey);
 
 }
 
