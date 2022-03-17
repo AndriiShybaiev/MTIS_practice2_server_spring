@@ -31,6 +31,10 @@ import javax.validation.constraints.*;
 import javax.validation.Valid;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
 
@@ -44,16 +48,39 @@ public class SalasApiController implements SalasApi {
 
     private final HttpServletRequest request;
 
+    String login= "root";
+    String password = "8AIAGUzOgTrzHZDxQg1P";
+
     @org.springframework.beans.factory.annotation.Autowired
     public SalasApiController(ObjectMapper objectMapper, HttpServletRequest request) {
         this.objectMapper = objectMapper;
         this.request = request;
     }
 
-    public ResponseEntity<Devolver> addInventory(@NotNull @Parameter(in = ParameterIn.QUERY, description = "" ,required=true,schema=@Schema()) @Valid @RequestParam(value = "restKey", required = true) String restKey,@Parameter(in = ParameterIn.DEFAULT, description = "Salas", required=true, schema=@Schema()) @Valid @RequestBody Sala body) {
+    public ResponseEntity<Devolver> addSala(@NotNull @Parameter(in = ParameterIn.QUERY, description = "" ,required=true,schema=@Schema()) @Valid @RequestParam(value = "restKey", required = true) String restKey,@Parameter(in = ParameterIn.DEFAULT, description = "Salas", required=true, schema=@Schema()) @Valid @RequestBody Sala body) {
         String accept = request.getHeader("Accept");
+        Integer rs=1;
         if (accept != null && accept.contains("application/json")) {
             try {
+                if (service.serviceClass.restKeyChecker(restKey))
+                {
+                    try {
+                        Connection con = DriverManager.getConnection (
+                                "jdbc:mysql://localhost:3306/mtis", login, password);
+                        Statement stmt = con.createStatement();
+                        String codigoSala = body.getCodigoSala();
+                        String nombre = body.getNombre();
+                        Integer nivel = body.getNivel();
+                        rs = stmt.executeUpdate ("INSERT INTO salas (codigoSala, nivel, nombre) VALUES ('" + codigoSala + "', " + nivel + ", " + "'" + nombre +"')");
+                        Devolver dv = new Devolver();
+                        dv.setCodigo(0);
+                        dv.setMensaje("ok");
+                        return new ResponseEntity<Devolver>(objectMapper.readValue("{\n  \"type\" : \"Devolver\",\n \"codigo\" : 200,\n  \"mensaje\" : \"message\"\n}", Devolver.class), HttpStatus.OK);
+                    } catch(SQLException e){
+                        System.out.println("SQL exception occured" + e);
+
+                    }
+                }
                 return new ResponseEntity<Devolver>(objectMapper.readValue("{\n  \"codigo\" : 200,\n  \"mensaje\" : \"message\"\n}", Devolver.class), HttpStatus.NOT_IMPLEMENTED);
             } catch (IOException e) {
                 log.error("Couldn't serialize response for content type application/json", e);
@@ -64,19 +91,6 @@ public class SalasApiController implements SalasApi {
         return new ResponseEntity<Devolver>(HttpStatus.NOT_IMPLEMENTED);
     }
 
-    public ResponseEntity<List<Sala>> allSalas(@NotNull @Parameter(in = ParameterIn.QUERY, description = "" ,required=true,schema=@Schema()) @Valid @RequestParam(value = "restKey", required = true) String restKey) {
-        String accept = request.getHeader("Accept");
-        if (accept != null && accept.contains("application/json")) {
-            try {
-                return new ResponseEntity<List<Sala>>(objectMapper.readValue("[ {\n  \"codigoSala\" : \"code here\",\n  \"id\" : 1,\n  \"nombre\" : \"name\",\n  \"nivel\" : 1\n}, {\n  \"codigoSala\" : \"code here\",\n  \"id\" : 1,\n  \"nombre\" : \"name\",\n  \"nivel\" : 1\n} ]", List.class), HttpStatus.NOT_IMPLEMENTED);
-            } catch (IOException e) {
-                log.error("Couldn't serialize response for content type application/json", e);
-                return new ResponseEntity<List<Sala>>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        }
-
-        return new ResponseEntity<List<Sala>>(HttpStatus.NOT_IMPLEMENTED);
-    }
 
     public ResponseEntity<Devolver> deleteSala(@Parameter(in = ParameterIn.PATH, description = "", required=true, schema=@Schema()) @PathVariable("idCodigoSala") String idCodigoSala,@NotNull @Parameter(in = ParameterIn.QUERY, description = "" ,required=true,schema=@Schema()) @Valid @RequestParam(value = "restKey", required = true) String restKey) {
         String accept = request.getHeader("Accept");
