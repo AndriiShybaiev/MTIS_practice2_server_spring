@@ -93,23 +93,6 @@ public class DispositivosApiController implements DispositivosApi {
         return new ResponseEntity<Devolver>(HttpStatus.NOT_IMPLEMENTED);
     }
 
-    public ResponseEntity<List<Dispositivo>> allDispositivos(@NotNull @Parameter(in = ParameterIn.QUERY, description = "" ,required=true,schema=@Schema()) @Valid @RequestParam(value = "restKey", required = true) String restKey) {
-        String accept = request.getHeader("Accept");
-        if (accept != null && accept.contains("application/json")) {
-            try {
-                if (service.serviceClass.restKeyChecker(restKey))
-                {
-                    System.out.println("restKeyOk");
-                }
-                return new ResponseEntity<List<Dispositivo>>(objectMapper.readValue("[ {\n  \"descripcion\" : \"printwer\",\n  \"codigo\" : 1,\n  \"id\" : 1\n}, {\n  \"descripcion\" : \"printwer\",\n  \"codigo\" : 1,\n  \"id\" : 1\n} ]", List.class), HttpStatus.NOT_IMPLEMENTED);
-            } catch (IOException e) {
-                log.error("Couldn't serialize response for content type application/json", e);
-                return new ResponseEntity<List<Dispositivo>>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        }
-
-        return new ResponseEntity<List<Dispositivo>>(HttpStatus.NOT_IMPLEMENTED);
-    }
 
     public ResponseEntity<Devolver> deleteDispositivo(@Parameter(in = ParameterIn.PATH, description = "", required=true, schema=@Schema()) @PathVariable("idDispositivo") String idDispositivo,@NotNull @Parameter(in = ParameterIn.QUERY, description = "" ,required=true,schema=@Schema()) @Valid @RequestParam(value = "restKey", required = true) String restKey) {
         String accept = request.getHeader("Accept");

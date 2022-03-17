@@ -31,12 +31,19 @@ import javax.validation.constraints.*;
 import javax.validation.Valid;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2022-03-02T00:36:42.320Z[GMT]")
 @RestController
 public class NivelesApiController implements NivelesApi {
+
+    String login= "root";
+    String password = "8AIAGUzOgTrzHZDxQg1P";
 
     private static final Logger log = LoggerFactory.getLogger(NivelesApiController.class);
 
@@ -52,8 +59,22 @@ public class NivelesApiController implements NivelesApi {
 
     public ResponseEntity<Devolver> deleteNivel(@Parameter(in = ParameterIn.PATH, description = "", required=true, schema=@Schema()) @PathVariable("idNivel") String idNivel,@NotNull @Parameter(in = ParameterIn.QUERY, description = "" ,required=true,schema=@Schema()) @Valid @RequestParam(value = "restKey", required = true) String restKey) {
         String accept = request.getHeader("Accept");
+        Integer rs=1;
         if (accept != null && accept.contains("application/json")) {
             try {
+                if (service.serviceClass.restKeyChecker(restKey))
+                {
+                    try {
+                        Connection con = DriverManager.getConnection (
+                                "jdbc:mysql://localhost:3306/mtis", login, password);
+                        Statement stmt = con.createStatement();
+                        rs = stmt.executeUpdate("DELETE FROM niveles WHERE codigo=" + idNivel + ";");
+                        return new ResponseEntity<Devolver>(objectMapper.readValue("{\n  \"type\" : \"Devolver\",\n \"codigo\" : 200,\n  \"mensaje\" : \"message\"\n}", Devolver.class), HttpStatus.OK);
+                    } catch(SQLException e){
+                        System.out.println("SQL exception occured" + e);
+
+                    }
+                }
                 return new ResponseEntity<Devolver>(objectMapper.readValue("{\n  \"codigo\" : 200,\n  \"mensaje\" : \"message\"\n}", Devolver.class), HttpStatus.NOT_IMPLEMENTED);
             } catch (IOException e) {
                 log.error("Couldn't serialize response for content type application/json", e);

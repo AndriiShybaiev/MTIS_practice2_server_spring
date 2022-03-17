@@ -52,17 +52,6 @@ public interface DispositivosApi {
 
     @Operation(summary = "", description = "", tags={ "dispositivos" })
     @ApiResponses(value = { 
-        @ApiResponse(responseCode = "200", description = "all of dispositivos table", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Dispositivo.class)))),
-        
-        @ApiResponse(responseCode = "400", description = "invalid input", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Devolver.class))) })
-    @RequestMapping(value = "/dispositivos",
-        produces = { "application/json" }, 
-        method = RequestMethod.GET)
-    ResponseEntity<List<Dispositivo>> allDispositivos(@NotNull @Parameter(in = ParameterIn.QUERY, description = "" ,required=true,schema=@Schema()) @Valid @RequestParam(value = "restKey", required = true) String restKey);
-
-
-    @Operation(summary = "", description = "", tags={ "dispositivos" })
-    @ApiResponses(value = { 
         @ApiResponse(responseCode = "200", description = "ok", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Devolver.class))),
         
         @ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Devolver.class))) })
