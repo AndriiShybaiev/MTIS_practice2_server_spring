@@ -68,7 +68,7 @@ public class NivelesApiController implements NivelesApi {
                         Connection con = DriverManager.getConnection (
                                 "jdbc:mysql://localhost:3306/mtis", login, password);
                         Statement stmt = con.createStatement();
-                        rs = stmt.executeUpdate("DELETE FROM niveles WHERE codigo=" + idNivel + ";");
+                        rs = stmt.executeUpdate("DELETE FROM niveles WHERE nivel=" + idNivel + ";");
                         return new ResponseEntity<Devolver>(objectMapper.readValue("{\n  \"type\" : \"Devolver\",\n \"codigo\" : 200,\n  \"mensaje\" : \"message\"\n}", Devolver.class), HttpStatus.OK);
                     } catch(SQLException e){
                         System.out.println("SQL exception occured" + e);
