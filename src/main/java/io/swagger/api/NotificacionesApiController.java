@@ -28,12 +28,21 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2022-03-02T00:36:42.320Z[GMT]")
 @RestController
@@ -44,6 +53,9 @@ public class NotificacionesApiController implements NotificacionesApi {
     private final ObjectMapper objectMapper;
 
     private final HttpServletRequest request;
+
+    String login= "root";
+    String password = "8AIAGUzOgTrzHZDxQg1P";
 
     @org.springframework.beans.factory.annotation.Autowired
     public NotificacionesApiController(ObjectMapper objectMapper, HttpServletRequest request) {
@@ -67,9 +79,69 @@ public class NotificacionesApiController implements NotificacionesApi {
 
     public ResponseEntity<Devolver> notificarPresenciaSala(@NotNull @Parameter(in = ParameterIn.QUERY, description = "" ,required=true,schema=@Schema()) @Valid @RequestParam(value = "restKey", required = true) String restKey,@Parameter(in = ParameterIn.DEFAULT, description = "nombreSala", required=true, schema=@Schema()) @Valid @RequestBody NotificacionPresenciaSala body) {
         String accept = request.getHeader("Accept");
+        ArrayList<String> emails = new ArrayList<>();
         if (accept != null && accept.contains("application/json")) {
             try {
-                return new ResponseEntity<Devolver>(objectMapper.readValue("{\n  \"codigo\" : 200,\n  \"mensaje\" : \"message\"\n}", Devolver.class), HttpStatus.NOT_IMPLEMENTED);
+                if (service.serviceClass.restKeyChecker(restKey))
+                {
+                    try {
+                        Connection con = DriverManager.getConnection (
+                                "jdbc:mysql://localhost:3306/mtis", login, password);
+                        Statement stmt = con.createStatement();
+                        ResultSet result = stmt.executeQuery("SELECT empleados.email, salas.nombre " +
+                                        "FROM ((empleados " +
+                                        "INNER JOIN controlpresencia ON empleados.nif=controlpresencia.nif)" +
+                                        "INNER JOIN salas ON controlpresencia.codigoSala=salas.codigoSala) " +
+                                        "WHERE salas.nombre ='" + body.getNombreSala() + "';");
+
+                        while(result.next())
+                        {
+                            emails.add(result.getString("empleados.email"));
+                        }
+                        for (int i =0; i<emails.size(); i++)
+                        {
+                            String to = emails.get(i);
+                            //String to = "1246090@protonmail.com";
+                            String from = "ashibayev@gmail.com";
+                            String host = "smtp.gmail.com";
+                            String username = "ashibayev@gmail.com";
+                            String password = "huetrjtytaetyvgy";
+                            Properties props = new Properties();
+                            props.setProperty("mail.smtp.ssl.enable", "true");
+                            props.setProperty("mail.smtp.host", host);
+                            Session session = Session.getInstance(props);
+                            try {
+                                // Create a default MimeMessage object.
+                                MimeMessage message = new MimeMessage(session);
+
+                                // Set From: header field of the header.
+                                message.setFrom(new InternetAddress(from));
+
+                                // Set To: header field of the header.
+                                message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
+
+                                // Set Subject: header field
+                                message.setSubject("This is the Subject Line!");
+
+                                // Now set the actual message
+                                message.setText("This is actual message");
+
+                                // Send message
+                                Transport.send(message, username, password);
+                                System.out.println("Sent message successfully....");
+                            } catch (MessagingException mex) {
+                                mex.printStackTrace();
+                            }
+                        }
+
+
+                    } catch(SQLException e){
+                        System.out.println("SQL exception occured" + e);
+
+                    }
+
+                }
+                return new ResponseEntity<Devolver>(objectMapper.readValue("{\n   \"type\" : \"Devolver\",\n  \"codigo\" : 200,\n  \"mensaje\" : \"message\"\n}", Devolver.class), HttpStatus.NOT_IMPLEMENTED);
             } catch (IOException e) {
                 log.error("Couldn't serialize response for content type application/json", e);
                 return new ResponseEntity<Devolver>(HttpStatus.INTERNAL_SERVER_ERROR);

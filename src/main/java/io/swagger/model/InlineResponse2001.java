@@ -57,8 +57,8 @@ public class InlineResponse2001  implements OneOfinlineResponse2001 {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("{\n  \"type\": \"InlineResponse2001\"\n,");
-    sb.append("    \"nivel\": ").append(toIndentedString(nivel)).append("\n,");
+    sb.append("{\n  \"type\": \"InlineResponse2001\",\n");
+    sb.append("    \"nivel\": ").append(toIndentedString(nivel)).append(",\n");
     sb.append("    \"descripcion\": ").append("\"").append(toIndentedString(descripcion)).append("\"\n");
     
     sb.append("}");

@@ -1,6 +1,8 @@
 package io.swagger.model;
 
 import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.validation.annotation.Validated;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
@@ -13,6 +15,40 @@ import javax.validation.constraints.*;
 
 
 public class InlineResponse200  implements OneOfinlineResponse200 {
+
+  public Integer getNivel() {
+    return nivel;
+  }
+
+  public void setNivel(Integer nivel) {
+    this.nivel = nivel;
+  }
+
+  public String getNombre() {
+    return nombre;
+  }
+
+  public void setNombre(String nombre) {
+    this.nombre = nombre;
+  }
+
+  public String getCodigoSala() {
+    return codigoSala;
+  }
+
+  public void setCodigoSala(String codigoSala) {
+    this.codigoSala = codigoSala;
+  }
+
+  @JsonProperty("nivel")
+  private Integer nivel = null;
+
+  @JsonProperty("nombre")
+  private String nombre = null;
+
+  @JsonProperty("codigoSala")
+  private String codigoSala = null;
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -33,8 +69,10 @@ public class InlineResponse200  implements OneOfinlineResponse200 {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class InlineResponse200 {\n");
-    
+    sb.append("{\n  \"type\": \"InlineResponse200\"\n,");
+    sb.append("    \"nivel\": ").append(toIndentedString(nivel)).append(",\n");
+    sb.append("    \"nombre\": ").append("\"").append(toIndentedString(nombre)).append("\",\n");
+    sb.append("    \"codigoSala\": ").append("\"").append(toIndentedString(codigoSala)).append("\"\n");
     sb.append("}");
     return sb.toString();
   }

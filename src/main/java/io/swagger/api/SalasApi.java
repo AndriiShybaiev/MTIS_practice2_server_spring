@@ -49,18 +49,7 @@ public interface SalasApi {
         produces = { "application/json" }, 
         consumes = { "application/json" }, 
         method = RequestMethod.POST)
-    ResponseEntity<Devolver> addInventory(@NotNull @Parameter(in = ParameterIn.QUERY, description = "" ,required=true,schema=@Schema()) @Valid @RequestParam(value = "restKey", required = true) String restKey, @Parameter(in = ParameterIn.DEFAULT, description = "Salas", required=true, schema=@Schema()) @Valid @RequestBody Sala body);
-
-
-    @Operation(summary = "", description = "", tags={ "salas" })
-    @ApiResponses(value = { 
-        @ApiResponse(responseCode = "200", description = "all salas table", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Sala.class)))),
-        
-        @ApiResponse(responseCode = "400", description = "invalid input", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Devolver.class))) })
-    @RequestMapping(value = "/salas",
-        produces = { "application/json" }, 
-        method = RequestMethod.GET)
-    ResponseEntity<List<Sala>> allSalas(@NotNull @Parameter(in = ParameterIn.QUERY, description = "" ,required=true,schema=@Schema()) @Valid @RequestParam(value = "restKey", required = true) String restKey);
+    ResponseEntity<Devolver> addSala(@NotNull @Parameter(in = ParameterIn.QUERY, description = "" ,required=true,schema=@Schema()) @Valid @RequestParam(value = "restKey", required = true) String restKey, @Parameter(in = ParameterIn.DEFAULT, description = "Salas", required=true, schema=@Schema()) @Valid @RequestBody Sala body);
 
 
     @Operation(summary = "delete sala by id", description = "", tags={ "salas" })
