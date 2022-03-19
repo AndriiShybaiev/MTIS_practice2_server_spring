@@ -7,7 +7,7 @@ import javax.activation.*;
 
 public class SendEmail {
 
-    public static boolean send(String to) {
+    public static boolean send(String to, String subject, String text) {
         String from = "ashibayev@gmail.com";
         String host = "smtp.gmail.com";
         String username = "ashibayev@gmail.com";
@@ -27,10 +27,10 @@ public class SendEmail {
             message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
 
             // Set Subject: header field
-            message.setSubject("This is the Subject Line!");
+            message.setSubject(subject);
 
             // Now set the actual message
-            message.setText("This is actual message");
+            message.setText(text);
 
             // Send message
             Transport.send(message, username, password);

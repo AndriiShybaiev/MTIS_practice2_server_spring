@@ -66,9 +66,34 @@ public class NotificacionesApiController implements NotificacionesApi {
 
     public ResponseEntity<Devolver> notificarError(@NotNull @Parameter(in = ParameterIn.QUERY, description = "" ,required=true,schema=@Schema()) @Valid @RequestParam(value = "restKey", required = true) String restKey,@Parameter(in = ParameterIn.DEFAULT, description = "", required=true, schema=@Schema()) @Valid @RequestBody NotificacionError body) {
         String accept = request.getHeader("Accept");
+        String email ="";
         if (accept != null && accept.contains("application/json")) {
             try {
-                return new ResponseEntity<Devolver>(objectMapper.readValue("{\n  \"codigo\" : 200,\n  \"mensaje\" : \"message\"\n}", Devolver.class), HttpStatus.NOT_IMPLEMENTED);
+                if (service.serviceClass.restKeyChecker(restKey))
+                {
+                    try {
+                        Connection con = DriverManager.getConnection (
+                                "jdbc:mysql://localhost:3306/mtis", login, password);
+                        Statement stmt = con.createStatement();
+                        ResultSet result = stmt.executeQuery("SELECT empleados.email " +
+                                "FROM empleados " +
+                                "WHERE empleados.nif ='" + body.getNif() + "';");
+
+                        while(result.next())
+                        {
+                            email = result.getString("empleados.email");
+                        }
+                        if (email!=null && email!="")
+                        {
+                            String text = "campo error recibido es " + body.getError();
+                            SendEmail.send(email,"This is the Subject Line!" ,text);
+                        }
+                    } catch(SQLException e){
+                        System.out.println("SQL exception occured" + e);
+
+                    }
+                }
+                return new ResponseEntity<Devolver>(objectMapper.readValue("{\n   \"type\" : \"Devolver\",\n    \"codigo\" : 200,\n  \"mensaje\" : \"message\"\n}", Devolver.class), HttpStatus.OK);
             } catch (IOException e) {
                 log.error("Couldn't serialize response for content type application/json", e);
                 return new ResponseEntity<Devolver>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -102,7 +127,7 @@ public class NotificacionesApiController implements NotificacionesApi {
                         for (int i =0; i<emails.size(); i++)
                         {
                             String to = emails.get(i);
-                            SendEmail.send(to);
+                            SendEmail.send(to,"This is the Subject Line!" ,"This is actual message");
                         }
 
 
@@ -122,11 +147,38 @@ public class NotificacionesApiController implements NotificacionesApi {
         return new ResponseEntity<Devolver>(HttpStatus.NOT_IMPLEMENTED);
     }
 
-    public ResponseEntity<Devolver> notificarUsuarioNoValido(@NotNull @Parameter(in = ParameterIn.QUERY, description = "" ,required=true,schema=@Schema()) @Valid @RequestParam(value = "restKey", required = true) String restKey,@Parameter(in = ParameterIn.DEFAULT, description = "nif", required=true, schema=@Schema()) @Valid @RequestBody NotificacionUsuarioValido body) {
+    public ResponseEntity<Devolver> notificarUsuarioValido(@NotNull @Parameter(in = ParameterIn.QUERY, description = "" ,required=true,schema=@Schema()) @Valid @RequestParam(value = "restKey", required = true) String restKey,@Parameter(in = ParameterIn.DEFAULT, description = "nif", required=true, schema=@Schema()) @Valid @RequestBody NotificacionUsuarioValido body) {
         String accept = request.getHeader("Accept");
+        String email ="";
+        Integer valido =0;
         if (accept != null && accept.contains("application/json")) {
             try {
-                return new ResponseEntity<Devolver>(objectMapper.readValue("{\n  \"codigo\" : 200,\n  \"mensaje\" : \"message\"\n}", Devolver.class), HttpStatus.NOT_IMPLEMENTED);
+                if (service.serviceClass.restKeyChecker(restKey))
+                {
+                    try {
+                        Connection con = DriverManager.getConnection (
+                                "jdbc:mysql://localhost:3306/mtis", login, password);
+                        Statement stmt = con.createStatement();
+                        ResultSet result = stmt.executeQuery("SELECT empleados.valido, empleados.email " +
+                                "FROM empleados " +
+                                "WHERE empleados.nif ='" + body.getNif() + "';");
+
+                        while(result.next())
+                        {
+                            email = result.getString("empleados.email");
+                            valido = result.getInt("empleados.valido");
+                        }
+                        if (email!=null && email!="")
+                        {
+                            String text = "campo valido de este nif es " + valido.toString();
+                            SendEmail.send(email,"This is the Subject Line!" ,text);
+                        }
+                    } catch(SQLException e){
+                        System.out.println("SQL exception occured" + e);
+
+                    }
+                }
+                return new ResponseEntity<Devolver>(objectMapper.readValue("{\n    \"type\" : \"Devolver\",\n   \"codigo\" : 200,\n  \"mensaje\" : \"message\"\n}", Devolver.class), HttpStatus.OK);
             } catch (IOException e) {
                 log.error("Couldn't serialize response for content type application/json", e);
                 return new ResponseEntity<Devolver>(HttpStatus.INTERNAL_SERVER_ERROR);

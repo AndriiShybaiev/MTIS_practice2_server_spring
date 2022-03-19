@@ -72,7 +72,7 @@ public interface NotificacionesApi {
         produces = { "application/json" }, 
         consumes = { "application/json" }, 
         method = RequestMethod.POST)
-    ResponseEntity<Devolver> notificarUsuarioNoValido(@NotNull @Parameter(in = ParameterIn.QUERY, description = "" ,required=true,schema=@Schema()) @Valid @RequestParam(value = "restKey", required = true) String restKey, @Parameter(in = ParameterIn.DEFAULT, description = "nif", required=true, schema=@Schema()) @Valid @RequestBody NotificacionUsuarioValido body);
+    ResponseEntity<Devolver> notificarUsuarioValido(@NotNull @Parameter(in = ParameterIn.QUERY, description = "" ,required=true,schema=@Schema()) @Valid @RequestParam(value = "restKey", required = true) String restKey, @Parameter(in = ParameterIn.DEFAULT, description = "nif", required=true, schema=@Schema()) @Valid @RequestBody NotificacionUsuarioValido body);
 
 }
 
