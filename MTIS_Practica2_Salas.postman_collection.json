@@ -1,0 +1,177 @@
+{
+	"info": {
+		"_postman_id": "ee556ff0-60c7-4266-9ffc-dcdb1b7a9c46",
+		"name": "MTIS_Practica2_Salas",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "http://127.0.0.1:8080/salas/abc DELETE+",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://127.0.0.1:8080/salas/abc?restKey=123",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"salas",
+						"abc"
+					],
+					"query": [
+						{
+							"key": "restKey",
+							"value": "123"
+						},
+						{
+							"key": "idDispositivo",
+							"value": "456",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://127.0.0.1:8080/salas/abc GET+",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://127.0.0.1:8080/salas/abc?restKey=123",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"salas",
+						"abc"
+					],
+					"query": [
+						{
+							"key": "restKey",
+							"value": "123"
+						},
+						{
+							"key": "idDispositivo",
+							"value": "456",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://127.0.0.1:8080/salas ADD+",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n \"type\":\"Sala\",\r\n \"id\":123,\r\n \"codigoSala\":\"abc\",\r\n \"nombre\":\"sala1\",\r\n \"nivel\":1\r\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8080/salas?restKey=123",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"salas"
+					],
+					"query": [
+						{
+							"key": "restKey",
+							"value": "123"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://127.0.0.1:8080/salas UPDATE+",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://127.0.0.1:8080/salas/abc?restKey=123",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"salas",
+						"abc"
+					],
+					"query": [
+						{
+							"key": "restKey",
+							"value": "123"
+						},
+						{
+							"key": "idCodigoSala",
+							"value": "\"abc\"",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
