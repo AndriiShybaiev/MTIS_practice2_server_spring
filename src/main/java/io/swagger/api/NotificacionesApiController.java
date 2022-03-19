@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import service.SendEmail;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -101,37 +102,7 @@ public class NotificacionesApiController implements NotificacionesApi {
                         for (int i =0; i<emails.size(); i++)
                         {
                             String to = emails.get(i);
-                            //String to = "1246090@protonmail.com";
-                            String from = "ashibayev@gmail.com";
-                            String host = "smtp.gmail.com";
-                            String username = "ashibayev@gmail.com";
-                            String password = "huetrjtytaetyvgy";
-                            Properties props = new Properties();
-                            props.setProperty("mail.smtp.ssl.enable", "true");
-                            props.setProperty("mail.smtp.host", host);
-                            Session session = Session.getInstance(props);
-                            try {
-                                // Create a default MimeMessage object.
-                                MimeMessage message = new MimeMessage(session);
-
-                                // Set From: header field of the header.
-                                message.setFrom(new InternetAddress(from));
-
-                                // Set To: header field of the header.
-                                message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
-
-                                // Set Subject: header field
-                                message.setSubject("This is the Subject Line!");
-
-                                // Now set the actual message
-                                message.setText("This is actual message");
-
-                                // Send message
-                                Transport.send(message, username, password);
-                                System.out.println("Sent message successfully....");
-                            } catch (MessagingException mex) {
-                                mex.printStackTrace();
-                            }
+                            SendEmail.send(to);
                         }
 
 
